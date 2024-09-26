@@ -221,6 +221,14 @@
             { "name": "Speaker Scores",
               "code": "ass",
               "type": "counter"
+            },
+            { "name": "Starting Location",
+              "code": "sl",
+              "type": "clickable_image",
+              "imageUrl": "https://i.imgur.com/kw2QR1S.png",
+              "clickRestriction": "none",
+              "allowableResponses": "1 12 13 24 25 36 37 48 49 60 61 72",
+              "shape": "circle 5 black red true"
             }
           ],
           "teleop": [
@@ -444,6 +452,33 @@
                     if (item.size) input.cols = item.size;
                     if (item.maxSize) input.maxLength = item.maxSize;
                     break;
+                case 'clickable_image':
+                    input = document.createElement('div');
+                    input.innerHTML = `
+                        <div style="position: relative; display: inline-block;">
+                            <img id="field-image" src="${item.imageUrl}" alt="Field Image" style="width: 100%; max-width: 800px; height: auto;">
+                            <div id="click-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                        </div>
+                        <input type="hidden" name="${item.code}" id="${item.code}-input">
+                    `;
+                    input.querySelector('#click-overlay').addEventListener('click', function(event) {
+                        const rect = event.target.getBoundingClientRect();
+                        const x = Math.round(event.clientX - rect.left);
+                        const y = Math.round(event.clientY - rect.top);
+                        const radius = parseInt(item.shape.split(' ')[1]);
+                        const circle = document.createElement('div');
+                        circle.style.position = 'absolute';
+                        circle.style.width = `${radius * 2}px`;
+                        circle.style.height = `${radius * 2}px`;
+                        circle.style.borderRadius = '50%';
+                        circle.style.backgroundColor = 'red';
+                        circle.style.left = `${x - radius}px`;
+                        circle.style.top = `${y - radius}px`;
+                        event.target.appendChild(circle);
+                        const inputField = document.getElementById(`${item.code}-input`);
+                        inputField.value += `${x},${y};`;
+                    });
+                    break;
             }
             if (input) div.appendChild(input);
             return div;
@@ -533,7 +568,7 @@
             // Reset checkboxes
             const checkboxInputs = form.querySelectorAll('input[type="checkbox"]');
             checkboxInputs.forEach(checkbox => {
-                checkbox.checked = false;
+                checkbox.checked = false; 
             });
 
             // Reset counter displays and hidden inputs
