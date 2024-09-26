@@ -507,83 +507,89 @@
         form.appendChild(submitButton);
 
         form.onsubmit = (e) => {
-            e.preventDefault();
-            let values = [];
-            
-            const inputs = form.querySelectorAll('input, textarea, select');
-            
-            let scouterName = '';
-            
-            inputs.forEach(input => {
-                if (input.name === 's') {
-                    scouterName = input.value;
-                    values.push(input.value);
-                } else if (input.type === 'checkbox') {
-                    values.push(input.checked ? 'yes' : 'no');
-                } else if (input.type === 'radio') {
-                    if (input.checked) {
-                        values.push(input.value);
-                    }
-                } else if (input.type !== 'submit') {
-                    values.push(input.value);
-                }
-            });
-            
-            // Join all values with tabs
-            let output = values.join('\t');
-            
-            // Clear existing QR code
-            const existingQR = document.getElementById('qrcode');
-            if (existingQR) {
-                existingQR.innerHTML = '';
-            } else {
-                // Create a container for the QR code if it doesn't exist
-                const qrContainer = document.createElement('div');
-                qrContainer.id = 'qrcode';
-                document.body.appendChild(qrContainer);
+    e.preventDefault();
+    let values = [];
+    
+    const inputs = form.querySelectorAll('input, textarea, select');
+    
+    let scouterName = '';
+    
+    inputs.forEach(input => {
+        if (input.name === 's') {
+            scouterName = input.value;
+            values.push(input.value);
+        } else if (input.type === 'checkbox') {
+            values.push(input.checked ? 'yes' : 'no');
+        } else if (input.type === 'radio') {
+            if (input.checked) {
+                values.push(input.value);
             }
-        
-            // Generate the new QR code
-            new QRCode(document.getElementById("qrcode"), {
-                text: output,
-                width: 256,
-                height: 256
-            });
-        
-            // Reset the form
-            form.reset();
-            
-            // Restore the Scouter's First Name
-            const scouterInput = form.querySelector('input[name="s"]');
-            if (scouterInput) {
-                scouterInput.value = scouterName;
-            }
-            
-            // Reset radio buttons
-            const radioInputs = form.querySelectorAll('input[type="radio"]');
-            radioInputs.forEach(radio => {
-                radio.checked = false;
-            });
+        } else if (input.type !== 'submit') {
+            values.push(input.value);
+        }
+    });
+    
+    // Join all values with tabs
+    let output = values.join('\t');
+    
+    // Clear existing QR code
+    const existingQR = document.getElementById('qrcode');
+    if (existingQR) {
+        existingQR.innerHTML = '';
+    } else {
+        // Create a container for the QR code if it doesn't exist
+        const qrContainer = document.createElement('div');
+        qrContainer.id = 'qrcode';
+        document.body.appendChild(qrContainer);
+    }
 
-            // Reset checkboxes
-            const checkboxInputs = form.querySelectorAll('input[type="checkbox"]');
-            checkboxInputs.forEach(checkbox => {
-                checkbox.checked = false; 
-            });
+    // Generate the new QR code
+    new QRCode(document.getElementById("qrcode"), {
+        text: output,
+        width: 256,
+        height: 256
+    });
 
-            // Reset counter displays and hidden inputs
-            const counterGroups = form.querySelectorAll('.form-group div');
-            counterGroups.forEach(group => {
-                const display = group.querySelector('span');
-                const hiddenInput = group.querySelector('input[type="hidden"]');
-                if (display && hiddenInput) {
-                    display.textContent = '0';
-                    hiddenInput.value = '0';
-                }
-            });
-        
-            alert('Form submitted! QR Code updated below.');
-        };
+    // Reset the form
+    form.reset();
+    
+    // Restore the Scouter's First Name
+    const scouterInput = form.querySelector('input[name="s"]');
+    if (scouterInput) {
+        scouterInput.value = scouterName;
+    }
+    
+    // Reset radio buttons
+    const radioInputs = form.querySelectorAll('input[type="radio"]');
+    radioInputs.forEach(radio => {
+        radio.checked = false;
+    });
+
+    // Reset checkboxes
+    const checkboxInputs = form.querySelectorAll('input[type="checkbox"]');
+    checkboxInputs.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+
+    // Reset counter displays and hidden inputs
+    const counterGroups = form.querySelectorAll('.form-group div');
+    counterGroups.forEach(group => {
+        const display = group.querySelector('span');
+        const hiddenInput = group.querySelector('input[type="hidden"]');
+        if (display && hiddenInput) {
+            display.textContent = '0';
+            hiddenInput.value = '0';
+        }
+    });
+
+    // Clear circles from the clickable image
+    const clickOverlay = document.getElementById('click-overlay');
+    while (clickOverlay.firstChild) {
+        clickOverlay.removeChild(clickOverlay.firstChild);
+    }
+
+    alert('Form submitted! QR Code updated below.');
+};
     </script>
 </body>
 </html>
